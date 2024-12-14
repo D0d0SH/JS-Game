@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="leaderboard-container">
+        <h1>Таблица лидеров</h1>
+        <table id="leaderboardTable" class="leaderboardTable">
+            <thead>
+                <tr>
+                    <th>Имя</th>
+                    <th>Счет</th>
+                    <th>Дата</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <button id="back-button" class="game-button">Назад к игре</button>
+    </div>
+
+    <script>
+        function loadLeaderboard() {
+            fetch('http://localhost:3000/get-leaderboard')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.querySelector('#leaderboardTable tbody');
+                    tableBody.innerHTML = ''; // Очищаем таблицу
+
+                    data.forEach((entry, index) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${entry.name}</td>
+                            <td>${entry.score}</td>
+                            <td>${new Date(entry.created_at).toLocaleString()}</td>
+                        `;
+                        row.style.animationDelay = `${index * 0.1}s`; // Задержка для каждой строки
+                        row.classList.add('fadeInRow'); // Добавляем класс для анимации
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Ошибка при загрузке таблицы лидеров:', error);
+                });
+        }
+
+        // Загружаем таблицу лидеров при загрузке страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLeaderboard();
+        });
+
+        // Обработчик кнопки "Назад"
+        document.getElementById('back-button').addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>
